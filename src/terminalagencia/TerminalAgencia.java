@@ -26,10 +26,12 @@ public class TerminalAgencia {
             Socket sock = new Socket("127.0.0.1",1500);
             Cliente c = new Cliente();
             c.envioDatos(sock);
+            System.out.println("Datos recibidos del servidor:"+c.reciboDatos(sock));
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             Logger.getLogger(TerminalAgencia.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
             
     }
     

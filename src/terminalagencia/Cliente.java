@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
 import java.util.logging.Level;
@@ -78,5 +79,19 @@ public class Cliente {
             System.out.println(ex.getMessage());
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         }*/
+    }
+    
+    public String reciboDatos(Socket socketRecepcion) throws IOException{
+        System.out.println("Recibiendo datos del servidor . . . ");
+        BufferedReader lectura;
+        String s = "";
+        try {
+            lectura=new BufferedReader( new
+            InputStreamReader(socketRecepcion.getInputStream()));
+            s = lectura.readLine();
+        } catch (IOException ex) {
+            System.out.println("MENSAJE ERROR EN INICIAR COMUNICACION: "+ex.getMessage());
+        }
+        return s;
     }
 }
