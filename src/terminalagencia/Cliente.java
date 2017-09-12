@@ -25,8 +25,8 @@ public class Cliente {
         BufferedReader teclado;
         String linea;
         teclado=new BufferedReader(new InputStreamReader(System.in));
-        /*try {
-            for (int i =0; i<=6; i++){
+        try {
+            for (int i =0; i<6; i++){
                 switch(i){
                     case 0: 
                         System.out.println("Ingrese Matricula:");
@@ -62,18 +62,13 @@ public class Cliente {
                         linea=term;
                         escritura.println(linea);
                         break;
-                    case 6:
-                        escritura=new PrintWriter(sock.getOutputStream(),true);
-                        linea="quit";
-                        escritura.println(linea);
-                        break;
                 }
             }
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-        try {
+        }
+        /*try {
             
             System.out.println("Ingrese comando:");
             escritura=new PrintWriter(sock.getOutputStream(),true);
@@ -82,6 +77,6 @@ public class Cliente {
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
     }
 }
