@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,15 +42,21 @@ public class Cliente {
                         linea=ag_vta;
                         escritura.println(linea);
                         break;
-                    case 2: 
+                    case 2:
+                        //Fecha-hora de venta
                         escritura=new PrintWriter(sock.getOutputStream(),true);
                         Date fecha = new Date();
-                        escritura.println(fecha);
+                        SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
+                        String dateString=sdf.format(fecha);
+                        escritura.println(dateString);
                         break;
                     case 3: 
-                        escritura=new PrintWriter(sock.getOutputStream(),true);
-                        Date fecha2 = new Date();
-                        escritura.println(fecha2);
+                        do{
+                            System.out.println("Ingrese fecha-hora de inicio (yyyy-mm-dd hh:mm:ss):");
+                            escritura=new PrintWriter(sock.getOutputStream(),true);
+                            linea=teclado.readLine();
+                        }while(!validarFecha(linea));
+                        escritura.println(linea);
                         break;
                     case 4: 
                         System.out.println("Ingrese Minutos:");
@@ -82,7 +89,7 @@ public class Cliente {
     }
     
     public String reciboDatos(Socket socketRecepcion) throws IOException{
-        System.out.println("Recibiendo datos del servidor . . . ");
+
         BufferedReader lectura;
         String s = "";
         try {
@@ -93,5 +100,36 @@ public class Cliente {
             System.out.println("MENSAJE ERROR EN INICIAR COMUNICACION: "+ex.getMessage());
         }
         return s;
+    }
+    
+    public boolean validarFecha(String fecha){
+        boolean valida=false;
+        if(fecha.length()==19){
+            if(Integer.parseInt(fecha.substring(0, 4)) >= 2017){
+                if(fecha.substring(4, 5).equals("-")){
+                    if(Integer.parseInt(fecha.substring(5, 7)) >=1 && Integer.parseInt(fecha.substring(5, 7)) <=12){
+                        if(fecha.substring(7, 8).equals("-")){
+                            if(Integer.parseInt(fecha.substring(8, 10)) >=1 && Integer.parseInt(fecha.substring(8, 10)) <=31){
+                                if(fecha.substring(10,11).equals(" ")){
+                                    if(Integer.parseInt(fecha.substring(11, 13)) >=0 && Integer.parseInt(fecha.substring(11, 13)) <=23){
+                                        if(fecha.substring(13,14).equals(":")){
+                                             if(Integer.parseInt(fecha.substring(14, 16)) >=0 && Integer.parseInt(fecha.substring(14, 16)) <=59){
+                                                 if(fecha.substring(16,17).equals(":")){
+                                                     if(Integer.parseInt(fecha.substring(17, 19)) >=0 && Integer.parseInt(fecha.substring(17, 19)) <=59){
+                                                         valida=true;
+                                                     }
+                                                 }
+                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return valida;
     }
 }

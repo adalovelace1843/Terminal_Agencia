@@ -27,6 +27,7 @@ public class TerminalAgencia {
             Cliente c = new Cliente();
             c.envioDatos(sock);
             System.out.println("Datos recibidos del servidor:"+c.reciboDatos(sock));
+            sock.close();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             Logger.getLogger(TerminalAgencia.class.getName()).log(Level.SEVERE, null, ex);
