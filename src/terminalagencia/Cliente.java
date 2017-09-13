@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,12 +21,39 @@ import java.util.logging.Logger;
  */
 public class Cliente {
     
+    public boolean login(Socket sock, Socket socketRecepcion) throws IOException{
+        boolean resultado=false;
+        PrintWriter escritura;
+        BufferedReader teclado;
+        String usuario,clave,linea;
+        teclado=new BufferedReader(new InputStreamReader(System.in));
+        
+        System.out.println("Usuario: ");
+        escritura=new PrintWriter(sock.getOutputStream(),true);
+        usuario=teclado.readLine();
+        
+        System.out.println("Contraseña: ");
+        escritura=new PrintWriter(sock.getOutputStream(),true);
+        clave=teclado.readLine();
+        linea=usuario+";"+clave;
+        escritura.println(linea);
+        
+        String respuesta=reciboDatos(socketRecepcion);
+        if(respuesta.equals("OK")){
+            resultado=true;
+        }
+        return resultado;
+    }
+    
     public void envioDatos(Socket sock){
         PrintWriter escritura;
         BufferedReader teclado;
         String linea;
         teclado=new BufferedReader(new InputStreamReader(System.in));
+        
         try {
+            escritura=new PrintWriter(sock.getOutputStream(),true);
+            escritura.println("1");
             for (int i =0; i<6; i++){
                 switch(i){
                     case 0: 
@@ -132,4 +158,6 @@ public class Cliente {
         
         return valida;
     }
+    
+    
 }
