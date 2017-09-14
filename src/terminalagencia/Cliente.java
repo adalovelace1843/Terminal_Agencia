@@ -53,6 +53,7 @@ public class Cliente {
         
         try {
             escritura=new PrintWriter(sock.getOutputStream(),true);
+            /* ENVIO '1' PARA INDICAR AL SERVIDOR QUE QUIERO INICIAR ENVIO DE DATOS DE TICKET */
             escritura.println("1");
             for (int i =0; i<6; i++){
                 switch(i){
@@ -99,8 +100,7 @@ public class Cliente {
                 }
             }
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error interno terminal agencia: "+ex.getMessage());
         }
         /*try {
             
@@ -123,7 +123,7 @@ public class Cliente {
             InputStreamReader(socketRecepcion.getInputStream()));
             s = lectura.readLine();
         } catch (IOException ex) {
-            System.out.println("MENSAJE ERROR EN INICIAR COMUNICACION: "+ex.getMessage());
+            System.out.println("Error interno terminal agencia: "+ex.getMessage());
         }
         return s;
     }

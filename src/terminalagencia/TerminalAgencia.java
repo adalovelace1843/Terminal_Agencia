@@ -24,17 +24,17 @@ public class TerminalAgencia {
      */
     public static void main(String[] args) {
         try {
-            // TODO code application logic here
-            
+
             Socket sock = new Socket("127.0.0.1",1500);
             Cliente c = new Cliente();
             boolean validacion=false;
             while(!validacion){
                 try{
+                    /* REALIZO LA VALIDACION HACIA EL SERVIDOR DE AGENCIA */
                     if(c.login(sock, sock)){
                         validacion=true;
                     }else{
-                        System.out.println("Usuario/contraseña incorrectos");
+                        System.out.println("Usuario/contraseña incorrectos!");
                     }
                 }catch (IOException ex) {
                     System.out.println("Hubo un error de comunicación, inténtelo nuevamente.");
@@ -52,7 +52,7 @@ public class TerminalAgencia {
                 switch(linea){
                     case "1": 
                         c.envioDatos(sock);
-                        System.out.println("Datos recibidos del servidor:"+c.reciboDatos(sock));
+                        System.out.println("\n\nDatos recibidos del servidor:"+c.reciboDatos(sock)+"\n");
                         break;
                     case "0":
                         PrintWriter escritura;
@@ -61,17 +61,13 @@ public class TerminalAgencia {
                         System.out.println("Saliendo ...");
                         sock.close();
                         break;
-                    default : System.out.println("opción incorrecta");break;
+                    default : System.out.println("opción incorrecta!");break;
                 }
                 
             }while(!linea.equals("0"));
     
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-            Logger.getLogger(TerminalAgencia.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error interno terminal agencia: "+ex.getMessage());
         }
-        
-            
     }
-    
 }
