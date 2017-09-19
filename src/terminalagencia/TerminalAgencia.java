@@ -5,13 +5,11 @@
  */
 package terminalagencia;
 
+import exceptions.ExCliente;
+import exceptions.ExComunicacion;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -23,25 +21,22 @@ public class TerminalAgencia {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        //Defino un cliente nuevo, que me va a definir un socket para la comunicaciòn con el servidor Agencia
+        Cliente c;
         try {
-
-            Socket sock = new Socket("127.0.0.1",1500);
-            Cliente c = new Cliente();
+            c = new Cliente();
+            /* REALIZO LA VALIDACION HACIA EL SERVIDOR DE AGENCIA */
             boolean validacion=false;
-            while(!validacion){
-                try{
-                    /* REALIZO LA VALIDACION HACIA EL SERVIDOR DE AGENCIA */
-                    if(c.login(sock, sock)){
-                        validacion=true;
-                    }else{
-                        System.out.println("Usuario/contraseña incorrectos!");
-                    }
-                }catch (IOException ex) {
-                    System.out.println("Hubo un error de comunicación, inténtelo nuevamente.");
-                } catch (ClassNotFoundException ex) {
-                     System.out.println("Hubo un error de comunicación, inténtelo nuevamente.");
+            while(!validacion){  
+                if(c.login()){
+                    validacion=true;
+                }else{
+                    System.out.println("Usuario/contraseña incorrectos!");
                 }
             }
+            /*FIN VALIDACION*/
+
+            /*INICIO MENU*/
             String linea;
             do{
                 System.out.println("\n----------------MENU----------------");
@@ -53,23 +48,23 @@ public class TerminalAgencia {
                 linea=teclado.readLine();
                 switch(linea){
                     case "1": 
-                        c.envioDatos(sock,"1");
-                        System.out.println("\n\nDatos recibidos del servidor:"+c.reciboDatos(sock)+"\n");
+                        System.out.println("\n\nDatos recibidos del servidor:"+c.altaTicket()+"\n");
                         break;
                     case "0":
-                        c.envioDatos(sock,"0");
+                        c.finalizar();
                         System.out.println("Saliendo ...");
-                        sock.close();
                         break;
                     default : System.out.println("opción incorrecta!");break;
                 }
-                
+
             }while(!linea.equals("0"));
-    
+        } catch (ExComunicacion ex) {
+            System.out.println(ex.getMessage());
+        } catch (ExCliente ex) {
+            System.out.println(ex.getMessage());
         } catch (IOException ex) {
-            System.out.println("Error interno terminal agencia: "+ex.getMessage());
-        } catch (ClassNotFoundException ex) {
-             System.out.println("Error interno terminal agencia: "+ex.getMessage());
+                System.out.println("Error al ingresar informaciòn (I/O)");
         }
+       
     }
 }
