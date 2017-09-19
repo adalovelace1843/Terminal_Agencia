@@ -12,15 +12,20 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.*;
+import java.util.Arrays;
+import javafx.scene.control.PasswordField;
 
 /**
  *
  * @author f188315
  */
+
+
+
+
 public class Cliente {
-    
+
     public boolean login(Socket sock, Socket socketRecepcion) throws IOException{
         boolean resultado=false;
         PrintWriter escritura;
@@ -33,9 +38,14 @@ public class Cliente {
         usuario=teclado.readLine();
         
         System.out.println("Contraseña: ");
+        
+        Console c=System.console();
+        char[] password = c.readPassword();
+        String pass = new String(password);
+
+        
         escritura=new PrintWriter(sock.getOutputStream(),true);
-        clave=teclado.readLine();
-        linea=usuario+";"+clave;
+        linea=usuario+";"+pass;
         escritura.println(linea);
         
         String respuesta=reciboDatos(socketRecepcion);
@@ -44,6 +54,9 @@ public class Cliente {
         }
         return resultado;
     }
+    
+  
+ 
     
     public void envioDatos(Socket sock){
         PrintWriter escritura;
