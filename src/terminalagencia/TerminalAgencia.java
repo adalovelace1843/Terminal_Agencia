@@ -38,6 +38,8 @@ public class TerminalAgencia {
                     }
                 }catch (IOException ex) {
                     System.out.println("Hubo un error de comunicación, inténtelo nuevamente.");
+                } catch (ClassNotFoundException ex) {
+                     System.out.println("Hubo un error de comunicación, inténtelo nuevamente.");
                 }
             }
             String linea;
@@ -51,13 +53,11 @@ public class TerminalAgencia {
                 linea=teclado.readLine();
                 switch(linea){
                     case "1": 
-                        c.envioDatos(sock);
+                        c.envioDatos(sock,"1");
                         System.out.println("\n\nDatos recibidos del servidor:"+c.reciboDatos(sock)+"\n");
                         break;
                     case "0":
-                        PrintWriter escritura;
-                        escritura=new PrintWriter(sock.getOutputStream(),true);
-                        escritura.println("0");
+                        c.envioDatos(sock,"0");
                         System.out.println("Saliendo ...");
                         sock.close();
                         break;
@@ -68,6 +68,8 @@ public class TerminalAgencia {
     
         } catch (IOException ex) {
             System.out.println("Error interno terminal agencia: "+ex.getMessage());
+        } catch (ClassNotFoundException ex) {
+             System.out.println("Error interno terminal agencia: "+ex.getMessage());
         }
     }
 }

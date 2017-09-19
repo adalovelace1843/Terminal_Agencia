@@ -14,7 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.*;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.control.PasswordField;
+import valueObjects.VoTicketTerminal;
 
 /**
  *
@@ -26,15 +29,14 @@ import javafx.scene.control.PasswordField;
 
 public class Cliente {
 
-    public boolean login(Socket sock, Socket socketRecepcion) throws IOException{
+    public boolean login(Socket sock, Socket socketRecepcion) throws IOException, ClassNotFoundException{
         boolean resultado=false;
-        PrintWriter escritura;
+        ObjectOutputStream escritura = new ObjectOutputStream(sock.getOutputStream());
         BufferedReader teclado;
-        String usuario,clave,linea;
+        String usuario,linea;
         teclado=new BufferedReader(new InputStreamReader(System.in));
         
         System.out.println("Usuario: ");
-        escritura=new PrintWriter(sock.getOutputStream(),true);
         usuario=teclado.readLine();
         
         System.out.println("Contraseña: ");
@@ -43,10 +45,8 @@ public class Cliente {
         char[] password = c.readPassword();
         String pass = new String(password);
 
-        
-        escritura=new PrintWriter(sock.getOutputStream(),true);
         linea=usuario+";"+pass;
-        escritura.println(linea);
+        escritura.writeObject(linea);
         
         String respuesta=reciboDatos(socketRecepcion);
         if(respuesta.equals("OK")){
@@ -58,83 +58,27 @@ public class Cliente {
   
  
     
-    public void envioDatos(Socket sock){
-        PrintWriter escritura;
-        BufferedReader teclado;
-        String linea;
-        teclado=new BufferedReader(new InputStreamReader(System.in));
-        
-        try {
-            escritura=new PrintWriter(sock.getOutputStream(),true);
-            /* ENVIO '1' PARA INDICAR AL SERVIDOR QUE QUIERO INICIAR ENVIO DE DATOS DE TICKET */
-            escritura.println("1");
-            for (int i =0; i<6; i++){
-                switch(i){
-                    case 0: 
-                        System.out.println("Ingrese Matricula:");
-                        escritura=new PrintWriter(sock.getOutputStream(),true);
-                        linea=teclado.readLine();
-                        escritura.println(linea);
-                        break;
-                    case 1: 
-                        String ag_vta = "Pocitos";
-                        escritura=new PrintWriter(sock.getOutputStream(),true);
-                        linea=ag_vta;
-                        escritura.println(linea);
-                        break;
-                    case 2:
-                        //Fecha-hora de venta
-                        escritura=new PrintWriter(sock.getOutputStream(),true);
-                        Date fecha = new Date();
-                        SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
-                        String dateString=sdf.format(fecha);
-                        escritura.println(dateString);
-                        break;
-                    case 3: 
-                        do{
-                            System.out.println("Ingrese fecha-hora de inicio (yyyy-mm-dd hh:mm:ss):");
-                            escritura=new PrintWriter(sock.getOutputStream(),true);
-                            linea=teclado.readLine();
-                        }while(!validarFecha(linea));
-                        escritura.println(linea);
-                        break;
-                    case 4: 
-                        System.out.println("Ingrese Minutos:");
-                        escritura=new PrintWriter(sock.getOutputStream(),true);
-                        linea=teclado.readLine();
-                        escritura.println(linea);
-                        break;
-                    case 5: 
-                        String term = "01";
-                        escritura=new PrintWriter(sock.getOutputStream(),true);
-                        linea=term;
-                        escritura.println(linea);
-                        break;
-                }
-            }
-        } catch (IOException ex) {
-            System.out.println("Error interno terminal agencia: "+ex.getMessage());
+    public void envioDatos(Socket sock, String opcion) throws IOException{
+        ObjectOutputStream escritura = new ObjectOutputStream(sock.getOutputStream());
+        /* ENVIO '1' PARA INDICAR AL SERVIDOR QUE QUIERO INICIAR ENVIO DE DATOS DE TICKET */
+        if(opcion.equals("1")){
+            VoTicketTerminal vo;
+            vo = creoVoTerminal();
+            escritura.writeObject(opcion);
+            ObjectOutputStream escritura2 = new ObjectOutputStream(sock.getOutputStream());
+            escritura2.writeObject(vo);
+        }else{ //salgo
+            escritura.writeObject(opcion);
         }
-        /*try {
-            
-            System.out.println("Ingrese comando:");
-            escritura=new PrintWriter(sock.getOutputStream(),true);
-            linea=teclado.readLine();
-            escritura.println(linea);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
     }
+        
     
-    public String reciboDatos(Socket socketRecepcion) throws IOException{
+    public String reciboDatos(Socket socketRecepcion) throws IOException, ClassNotFoundException{
 
-        BufferedReader lectura;
         String s = "";
         try {
-            lectura=new BufferedReader( new
-            InputStreamReader(socketRecepcion.getInputStream()));
-            s = lectura.readLine();
+            ObjectInputStream lectura = new ObjectInputStream(socketRecepcion.getInputStream());
+            s = (String) lectura.readObject();
         } catch (IOException ex) {
             System.out.println("Error interno terminal agencia: "+ex.getMessage());
         }
@@ -172,5 +116,55 @@ public class Cliente {
         return valida;
     }
     
+    public VoTicketTerminal creoVoTerminal () throws IOException{
+        BufferedReader teclado;
+        String linea;
+        teclado=new BufferedReader(new InputStreamReader(System.in));
+        VoTicketTerminal vo = new VoTicketTerminal();
+               
+        for (int i =0; i<6; i++){
+            switch(i){
+                case 0: 
+                    System.out.println("Ingrese Matricula:");
+                    linea=teclado.readLine();
+                    vo.setMatricula(linea);
+                    break;
+                case 1: 
+                    String ag_vta = "Pocitos";
+                    vo.setAgencia(ag_vta);
+                    break;
+                case 2:
+                    Date fecha = new Date();
+                    SimpleDateFormat sdf=new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
+                    String dateString=sdf.format(fecha);
+                    vo.setFecha_hora_venta(dateString);
+                    break;
+                case 3:
+                    boolean error;
+                    do{
+                        System.out.println("Ingrese fecha-hora de inicio (yyyy-mm-dd hh:mm:ss):");
+                        linea=teclado.readLine();
+                        if(!validarFecha(linea)){
+                            System.out.println("El formato no es valido");
+                            error=true;
+                        }else{
+                            error=false;
+                        }    
+                    }while(error);
+                    vo.setFecha_hora_inicio(linea);
+                    break;
+                case 4: 
+                    System.out.println("Ingrese Minutos:");
+                    linea=teclado.readLine();
+                    vo.setMin(Integer.parseInt(linea));
+                    break;
+                case 5: 
+                    String term = "01";
+                    vo.setTerminal(term);
+                    break;
+            }
+        }
     
+        return vo;
+    }
 }
