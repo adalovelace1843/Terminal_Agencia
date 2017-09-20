@@ -41,6 +41,7 @@ public class TerminalAgencia {
             do{
                 System.out.println("\n----------------MENU----------------");
                 System.out.println("1- Alta ticket");
+                System.out.println("2- Anular ticket");
                 System.out.println("0- Salir");
                 System.out.println("\nIngrese opción: ");
                 BufferedReader teclado;
@@ -49,6 +50,9 @@ public class TerminalAgencia {
                 switch(linea){
                     case "1": 
                         System.out.println("\n\nDatos recibidos del servidor:"+c.altaTicket()+"\n");
+                        break;
+                    case "2":
+                        System.out.println("\n\nDatos recibidos del servidor:"+c.anularTicket()+"\n");
                         break;
                     case "0":
                         c.finalizar();

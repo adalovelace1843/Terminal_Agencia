@@ -14,6 +14,8 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import valueObjects.VoTicketTerminal;
 
 /**
@@ -159,5 +161,24 @@ public class Cliente {
     
     public void finalizar() throws ExComunicacion{
         com.Finalizar();
+    }
+    
+    public String anularTicket() throws ExComunicacion, ExCliente{
+        
+        BufferedReader teclado;
+        String linea,resp;
+        teclado=new BufferedReader(new InputStreamReader(System.in));
+        try {
+            System.out.println("Ingrese numero de ticket a anular:");
+            linea=teclado.readLine();
+            com.envioDatos("2");
+            com.envioDatos(Integer.parseInt(linea));
+            
+            /*RECIBO RESPUESTA DEL SERVIDOR*/
+            resp = (String) com.reciboDatos();
+        } catch (IOException ex) {
+            throw new ExCliente("Error al ingresar informaciòn (I/O)");
+        }
+        return resp;
     }
 }
