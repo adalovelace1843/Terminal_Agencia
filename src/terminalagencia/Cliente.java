@@ -36,11 +36,13 @@ public class Cliente {
     }
     
     private void levantarDatosDesdeArchivo() throws ExComunicacion, ExCliente{
-       
+        
         try {
             //Obtengo los datos del archivo de configuracion
             Properties p = new Properties();
-            InputStream in = getClass().getResourceAsStream("config.properties");
+            Thread currentThread = Thread.currentThread();
+            ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+            InputStream in = contextClassLoader.getResourceAsStream("config/config.properties");
             p.load(in);
             String ip=p.getProperty("ip");
             String puerto=p.getProperty("puerto");
