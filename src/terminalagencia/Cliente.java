@@ -40,13 +40,14 @@ public class Cliente {
         try {
             //Obtengo los datos del archivo de configuracion
             Properties p = new Properties();
-            String nomArch = "config.properties";
-            p.load (new FileInputStream (nomArch));
+            InputStream in = getClass().getResourceAsStream("config.properties");
+            p.load(in);
             String ip=p.getProperty("ip");
             String puerto=p.getProperty("puerto");
             com.crearComunicacion(ip, Integer.parseInt(puerto));
             this.agencia=p.getProperty("agencia");
             this.terminal=p.getProperty("terminal");
+            in.close();
         } catch (FileNotFoundException ex) {
             throw new ExCliente("No existe archivo de configuración en Cliente");
         } catch (IOException ex) {
