@@ -14,8 +14,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Properties;
 import valueObjects.VoTicketTerminal;
 
 /**
@@ -28,10 +27,32 @@ import valueObjects.VoTicketTerminal;
 
 public class Cliente {
     private Comunicacion com;
-
-    public Cliente() throws ExComunicacion {
+    private String agencia;
+    private String terminal;
+    
+    public Cliente() throws ExComunicacion, ExCliente {
         com = new Comunicacion();
-        com.crearComunicacion("127.0.0.1", 1500);
+        levantarDatosDesdeArchivo();
+    }
+    
+    private void levantarDatosDesdeArchivo() throws ExComunicacion, ExCliente{
+       
+        try {
+            //Obtengo los datos del archivo de configuracion
+            Properties p = new Properties();
+            String nomArch = "config.properties";
+            p.load (new FileInputStream (nomArch));
+            String ip=p.getProperty("ip");
+            String puerto=p.getProperty("puerto");
+            com.crearComunicacion(ip, Integer.parseInt(puerto));
+            this.agencia=p.getProperty("agencia");
+            this.terminal=p.getProperty("terminal");
+        } catch (FileNotFoundException ex) {
+            throw new ExCliente("No existe archivo de configuración en Cliente");
+        } catch (IOException ex) {
+            throw new ExCliente("Error al leer archivo de configuración en Cliente");
+        }
+        
     }
     
     public boolean login() throws ExComunicacion,ExCliente{
@@ -112,8 +133,7 @@ public class Cliente {
                         vo.setMatricula(linea);
                         break;
                     case 1: 
-                        String ag_vta = "Pocitos";
-                        vo.setAgencia(ag_vta);
+                        vo.setAgencia(this.agencia);
                         break;
                     case 2:
                         Date fecha = new Date();
@@ -141,8 +161,7 @@ public class Cliente {
                         vo.setMin(Integer.parseInt(linea));
                         break;
                     case 5: 
-                        String term = "01";
-                        vo.setTerminal(term);
+                        vo.setTerminal(terminal);
                         break;
                 }
             }
