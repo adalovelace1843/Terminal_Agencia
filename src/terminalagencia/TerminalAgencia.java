@@ -27,6 +27,7 @@ public class TerminalAgencia {
             c = new Cliente();
             /* REALIZO LA VALIDACION HACIA EL SERVIDOR DE AGENCIA */
             boolean validacion=false;
+            System.out.println("Bienvenidos a sistema tickets TicketsLink");
             while(!validacion){  
                 if(c.login()){
                     validacion=true;
