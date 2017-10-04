@@ -16,6 +16,7 @@ import java.util.Date;
 import java.io.*;
 import java.util.Properties;
 import valueObjects.VoTicketTerminal;
+import valueObjects.voLogin;
 
 /**
  *
@@ -27,7 +28,6 @@ import valueObjects.VoTicketTerminal;
 
 public class Cliente {
     private Comunicacion com;
-    private String agencia;
     private String terminal;
     
     public Cliente() throws ExComunicacion, ExCliente {
@@ -47,7 +47,6 @@ public class Cliente {
             String ip=p.getProperty("ip");
             String puerto=p.getProperty("puerto");
             com.crearComunicacion(ip, Integer.parseInt(puerto));
-            this.agencia=p.getProperty("agencia");
             this.terminal=p.getProperty("terminal");
             in.close();
         } catch (FileNotFoundException ex) {
@@ -62,27 +61,32 @@ public class Cliente {
         boolean resultado=false;
         try {
             BufferedReader teclado;
-            String usuario,linea;
+            voLogin vo = new voLogin();
             
             /*INGRESO USUARIO Y CONTRASEÑA*/
             teclado=new BufferedReader(new InputStreamReader(System.in));
             System.out.println("Usuario: ");
-            usuario=teclado.readLine();
+            vo.setUsuario(teclado.readLine());
             System.out.println("Contraseña: ");
             Console c=System.console();
             char[] password = c.readPassword();
             String pass = new String(password);
-            linea=usuario+";"+pass;
+            vo.setClave(pass);
             /*FIN*/
             
+            System.out.println("Terminal: ");
+            vo.setTerminal(teclado.readLine());
+            
+           
             /*ENVIO DATOS*/
-            com.envioDatos(linea);
+            com.envioDatos(vo);
             
             /*ESPERO RESPUESTA DE SERVIDOR AGENCIA*/
             String respuesta=(String) com.reciboDatos();
             
             if(respuesta.equals("OK")){
                 resultado=true;
+                this.terminal=vo.getTerminal();
             }   
         } catch (IOException ex) {
             throw new ExCliente("Error en login (TA)["+ex.getMessage()+"]");
@@ -136,7 +140,7 @@ public class Cliente {
                         vo.setMatricula(linea);
                         break;
                     case 1: 
-                        vo.setAgencia(this.agencia);
+                       
                         break;
                     case 2:
                         Date fecha = new Date();

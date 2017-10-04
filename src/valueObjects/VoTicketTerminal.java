@@ -13,7 +13,6 @@ import java.io.Serializable;
  */
 public class VoTicketTerminal implements Serializable{
     private String matricula;
-    private String agencia;
     private String fecha_hora_venta;
     private String fecha_hora_inicio;
     private int min;
@@ -28,14 +27,6 @@ public class VoTicketTerminal implements Serializable{
 
     public void setMatricula(String matricula) {
         this.matricula = matricula;
-    }
-
-    public String getAgencia() {
-        return agencia;
-    }
-
-    public void setAgencia(String agencia) {
-        this.agencia = agencia;
     }
 
     public String getFecha_hora_venta() {

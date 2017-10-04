@@ -32,7 +32,7 @@ public class TerminalAgencia {
                 if(c.login()){
                     validacion=true;
                 }else{
-                    System.out.println("Usuario/contraseña incorrectos!");
+                    System.out.println("Datos incorrectos, intente nuevamente.\n");
                 }
             }
             /*FIN VALIDACION*/
